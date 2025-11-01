@@ -1,12 +1,6 @@
 #terraform variables for AWS
 
-variable "aws_access_key"{
-default="AKIASTHLZRK52VN3OFD5"
-}
 
-variable "aws_secret_key"{
-default="R9XbZqbXKj9y5AkGreQr3fdvH3/C5wYJK+g3bAaA"
-}
 
 variable "aws_region"{
 #ap-south-1
