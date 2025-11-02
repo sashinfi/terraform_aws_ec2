@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'JDK21'
+        maven 'MAVEN_3911'
+        terraform 'terraform_local' // Use the name you defined in Global Tool Configuration
+    }
+
+    stages {
+        stage('git clone') {
+            steps {
+                echo 'git clone'
+                git branch: 'main', url: 'https://github.com/sashinfi/terraform_aws_ec2.git'
+            }
+        }
+        
+        // Wrap all Terraform stages in a 'dir' block
+        stage('Terraform Automation') {
+		
+ 
+            steps {
+			withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-credentials-for-terraform', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                dir('main') { // The directory cloned by git
+                    echo 'Running Terraform commands in the correct directory'
+                    echo 'terraform init'
+                    bat 'terraform init'
+                    
+                    echo 'terraform plan'
+                    bat 'terraform plan -out=tfplan' // Save plan for review
+                    
+                    echo 'Complete Deployment'
+                    bat 'terraform apply -auto-approve tfplan'
+                }
+            }
+			}
+        }
+    }
+}
